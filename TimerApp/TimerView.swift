@@ -8,6 +8,7 @@ struct TimerView: View {
     @State private var timerPaused: Bool = false
     @State private var timerTask: Task<Void, Never>? = nil
     @State private var audioPlayer: AVAudioPlayer? = nil
+    @State private var showTimesUp: Bool = false
     
     init(initialTime: Int) {
         self.initialTime = initialTime
@@ -16,36 +17,49 @@ struct TimerView: View {
     
     var body: some View {
         VStack(spacing: 32) {
-            Text(timeString)
-                .font(.system(size: 48, weight: .bold, design: .monospaced))
-            if !timerActive {
-                Button("Start") {
-                    playStartSound()
-                    startTimer()
+            if showTimesUp {
+                ZStack {
+                    Text("Time's Up")
+                        .font(.system(size: 48, weight: .bold, design: .monospaced))
+                        .foregroundColor(.red)
+                        .scaleEffect(showTimesUp ? 1.2 : 0.8)
+                        .opacity(showTimesUp ? 1 : 0)
+                        .animation(.easeOut(duration: 0.5), value: showTimesUp)
                 }
-                .font(.title)
-                .padding()
-                .background(Color.green)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-            } else if timerPaused {
-                Button("Resume") {
-                    resumeTimer()
-                }
-                .font(.title)
-                .padding()
-                .background(Color.green)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
             } else {
-                Button("Stop") {
-                    pauseTimer()
+                Text(timeString)
+                    .font(.system(size: 48, weight: .bold, design: .monospaced))
+                if !timerActive {
+                    Button("Start") {
+                        showTimesUp = false
+                        playStartSound()
+                        startTimer()
+                    }
+                    .font(.title)
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+                } else if timerPaused {
+                    Button("Resume") {
+                        showTimesUp = false
+                        resumeTimer()
+                    }
+                    .font(.title)
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+                } else {
+                    Button("Stop") {
+                        pauseTimer()
+                    }
+                    .font(.title)
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
                 }
-                .font(.title)
-                .padding()
-                .background(Color.red)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
             }
         }
         .onDisappear {
@@ -71,6 +85,9 @@ struct TimerView: View {
                     if timeRemaining == 0 {
                         timerActive = false
                         timerPaused = false
+                        withAnimation {
+                            showTimesUp = true
+                        }
                     }
                 }
             }
@@ -94,6 +111,9 @@ struct TimerView: View {
                     if timeRemaining == 0 {
                         timerActive = false
                         timerPaused = false
+                        withAnimation {
+                            showTimesUp = true
+                        }
                     }
                 }
             }
