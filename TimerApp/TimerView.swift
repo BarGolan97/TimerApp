@@ -85,6 +85,7 @@ struct TimerView: View {
                     if timeRemaining == 0 {
                         timerActive = false
                         timerPaused = false
+                        playEndSound()
                         withAnimation {
                             showTimesUp = true
                         }
@@ -111,6 +112,7 @@ struct TimerView: View {
                     if timeRemaining == 0 {
                         timerActive = false
                         timerPaused = false
+                        playEndSound()
                         withAnimation {
                             showTimesUp = true
                         }
@@ -128,6 +130,16 @@ struct TimerView: View {
             audioPlayer?.play()
         } catch {
             print("Could not play sound: \(error.localizedDescription)")
+        }
+    }
+    
+    private func playEndSound() {
+        guard let url = Bundle.main.url(forResource: "TimesUp", withExtension: "wav") else { return }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("Could not play end sound: \(error.localizedDescription)")
         }
     }
 }
