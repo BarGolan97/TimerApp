@@ -28,6 +28,14 @@ struct TimerView: View {
                         .opacity(showTimesUp ? 1 : 0)
                         .animation(.easeOut(duration: 0.5), value: showTimesUp)
                 }
+                Button("Repeat") {
+                    repeatTimer()
+                }
+                .font(.title)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .clipShape(Capsule())
             } else {
                 Text(timeString)
                     .font(.system(size: 48, weight: .bold, design: .monospaced))
@@ -152,6 +160,13 @@ struct TimerView: View {
         } catch {
             print("Could not play end sound: \(error.localizedDescription)")
         }
+    }
+    
+    private func repeatTimer() {
+        timeRemaining = initialTime
+        showTimesUp = false
+        playStartSound()
+        startTimer()
     }
 }
 
